@@ -1,0 +1,27 @@
+---
+description: Omni-channel communication (Twilio, email, Slack/Teams, WebSocket)
+globs: backend/integrations/**, backend/services/channels/**, backend/api/routes/channels/**
+---
+
+Channel stack:
+- Twilio for WhatsApp and SMS (required).
+- Configurable email provider (e.g. SendGrid, AWS SES) for ticket ingestion and outbound email.
+- Slack / Microsoft Teams integration for agent workflows and notifications.
+- WebSocket for live website chat and real-time streaming.
+- Optional: social media, mobile app (API-first).
+
+Omni-channel rules:
+- Unified conversation thread: one logical conversation may have messages from multiple channels (chat, email, WhatsApp, etc.); store channel per message and allow channel switching without losing context.
+- Conversation history synchronization: persist all messages in a canonical store (Supabase); sync state for real-time clients via WebSocket or polling.
+- Isolate channel adapters behind a common interface (e.g. ChannelProvider, send_message, receive_webhook) so business logic does not depend on a specific provider.
+- Incoming webhooks (Twilio, email inbound, Slack events) must validate signatures/tokens and route to a single ingestion pipeline that creates/updates conversations and messages.
+- Do not hardcode Twilio credentials or email API keys; use configuration and env.
+
+Twilio-specific:
+- Use Twilio SDK for sending/receiving WhatsApp and SMS; handle delivery status callbacks and store in conversation history.
+- Implement idempotency where possible for webhook handlers to avoid duplicate message processing.
+- Rate limiting and validation on webhook endpoints to prevent abuse.
+
+Do not:
+- Put channel-specific logic (e.g. Twilio XML) in core conversation or ticket services.
+- Assume a single channel per conversation; design for multi-channel from the start.

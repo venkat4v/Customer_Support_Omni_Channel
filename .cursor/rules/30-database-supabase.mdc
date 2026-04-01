@@ -1,0 +1,35 @@
+---
+description: Supabase (PostgreSQL) and persistence rules
+globs: backend/models/**, backend/repositories/**, backend/migrations/**, db/**, supabase/**
+---
+
+Database stack:
+- Supabase (PostgreSQL) as the source of truth for structured application data.
+- Use Supabase migrations for all schema changes.
+- Use Row Level Security (RLS) where multi-tenant or row-level access control is required.
+
+Database rules:
+- Design tables with clear ownership, timestamps, and constraints.
+- Add indexes for common filters and joins (conversations, tickets, messages, knowledge chunks).
+- Use foreign keys where appropriate.
+- Prefer soft-delete only when there is a real product need.
+
+Schema design expectations:
+- Every core entity should have: id, created_at, updated_at.
+- For SaaS systems, include tenant/organization isolation where relevant.
+- Use enums or constrained fields for finite states (ticket status, channel type, priority, etc.).
+- Keep schemas normalized unless denormalization is justified by performance needs.
+- Align entity design with docs/DB_SCHEMA.md (conversations, tickets, messages, knowledge_base, agents, etc.).
+
+Repository rules:
+- All DB access must go through repositories/data access layer (or Supabase client abstraction).
+- Keep query code out of routes and services unless trivial and already patterned.
+- Parameterize queries; avoid N+1 query patterns.
+- Use transactions when multiple writes must succeed together.
+- Do not rely on Supabase client directly in route handlers; wrap in repositories.
+
+Do not:
+- Write raw SQL inside controllers/routes.
+- Make schema changes without migration files.
+- Assume single-tenant if the product is multi-tenant.
+- Hardcode Supabase URL or anon key in code; use environment configuration.

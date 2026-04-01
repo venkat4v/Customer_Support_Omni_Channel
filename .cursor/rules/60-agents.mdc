@@ -1,0 +1,37 @@
+---
+description: AI agents, chatbot, and agent copilot rules
+globs: ai/**, agents/**, tools/**, workflows/**, orchestration/**
+---
+
+Product context:
+- GenAI + RAG chatbot for customer queries; agent copilot for suggested replies, KB retrieval, ticket summary, troubleshooting steps, conversation drafting, one-click response generation.
+- NLP intelligence: intent detection, sentiment, urgency, topic clustering, complaint/escalation detection, language detection.
+- Tools may include: KB search, ticket lookup, customer context, CRM, external APIs; all behind validated tool layer.
+
+Agent system architecture:
+- Separate planner, executor, tools, memory, state, and evaluation logic.
+- Agents must be modular and role-specific (customer-facing chatbot vs agent copilot).
+- Tool calls must be explicit, validated, and logged.
+
+Agent rules:
+- Agents must not directly access databases or external APIs except through a defined tool layer.
+- Prompts must be templated and stored separately from orchestration logic.
+- Keep critical business workflows (routing, escalation, SLA) deterministic where possible.
+- Add output validation and fallback behavior; use structured schemas for agent outputs in production.
+- Prefer supervisor/policy logic for multi-agent coordination when needed.
+- Support auto-generated responses and AI suggestions for human agents per PRD.
+
+Tooling rules:
+- Every tool must have: clear purpose, input schema, output schema, failure behavior.
+- Tools must be side-effect aware; sensitive tools must enforce auth and authorization.
+- Validate tool inputs and outputs; restrict tool access by policy (security rule).
+
+Memory/state rules:
+- Separate short-term conversational state from long-term memory.
+- Store long-term memory only when product requirements justify it; track provenance when relevant.
+- Unified conversation thread and history sync across channels (see omni-channel rule).
+
+Do not:
+- Let agents perform unrestricted actions.
+- Hide tool errors.
+- Mix prompt text deeply into service/business code.

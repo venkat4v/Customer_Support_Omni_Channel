@@ -1,0 +1,27 @@
+---
+description: Observability, monitoring, and analytics for the copilot system
+globs: backend/core/logging/**, backend/core/metrics/**, infra/monitoring/**, frontend/features/analytics/**
+---
+
+Observability scope (see PRD):
+- System logs (structured, with correlation IDs for requests and conversations).
+- AI response monitoring (latency, token usage, model, errors).
+- Latency monitoring for API, RAG, and channel adapters.
+- Error tracking (e.g. centralized error reporting).
+- Usage analytics (conversations per channel, tickets resolved, agent vs AI resolution).
+
+Dashboard and reporting:
+- Conversation analytics: CSAT, sentiment, resolution time, first response time, call quality score, agent performance, AI vs human resolution rate.
+- Real-time call monitoring: live transcription, real-time sentiment, agent performance, escalation alerts, compliance monitoring (as per PRD).
+- Expose metrics in a form consumable by AWS CloudWatch or third-party APM; keep dashboards defined in code or config where possible.
+
+Rules:
+- Use structured logging (JSON or key-value) with consistent fields: request_id, conversation_id, user_id, channel, level, message, duration_ms.
+- Do not log PII, passwords, or raw tokens; mask or redact in log pipelines if needed.
+- Instrument critical paths: RAG retrieval, LLM calls, Twilio/email send, ticket creation, webhook handling.
+- Alerts for critical failures (e.g. webhook ingestion down, OpenAI errors above threshold); avoid alert fatigue.
+
+Do not:
+- Rely on ad-hoc print statements for production diagnostics.
+- Expose internal error details or stack traces to end-users; keep detailed errors in logs only.
+- Add observability as an afterthought; include logging and metrics in new features by default.

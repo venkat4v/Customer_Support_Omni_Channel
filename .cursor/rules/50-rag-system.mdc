@@ -1,0 +1,36 @@
+---
+description: Retrieval-augmented generation and knowledge base rules
+globs: ai/**, rag/**, retrieval/**, embeddings/**, vector/**, ingestion/**, knowledge/**
+---
+
+AI stack:
+- OpenAI API for embeddings and text generation (chat/completions).
+- Supabase (or dedicated vector store) for vector search over knowledge chunks.
+
+RAG architecture:
+- Separate ingestion, parsing, chunking, embedding, indexing, retrieval, reranking, context assembly, and answer generation.
+- Keep retrieval logic independent from answer generation logic.
+- Preserve source metadata for traceability (help center, product docs, FAQ, past tickets, internal wiki).
+
+RAG rules:
+- Never dump raw full documents into prompts when chunking is expected.
+- Use deterministic chunking strategies unless explicitly experimenting.
+- Maintain chunk metadata: source, page, section, title, tenant, timestamps.
+- Prefer source attribution/citations in outputs for trust and traceability.
+- Add configurable retrieval parameters: top_k, filters, score thresholds, reranking options.
+- Support multi-document search and follow-up question understanding; use conversation context when building queries.
+
+Knowledge base management (see PRD):
+- Support document upload, PDF ingestion, website scraping, auto chunking, embedding generation, version control.
+- Ingest from help center articles, product documentation, FAQ, past support tickets, internal wiki.
+- Normalize and sanitize extracted text; preserve source identity and version.
+
+Answering expectations:
+- Ground answers in retrieved context; handle no-context and low-confidence gracefully.
+- Avoid hallucinating unavailable facts; return structured outputs where the product requires it.
+- Support multi-language responses where configured.
+
+Do not:
+- Mix ingestion code with runtime answer generation in the same module.
+- Make retrieval behavior impossible to inspect or tune.
+- Hide retrieval failures silently.

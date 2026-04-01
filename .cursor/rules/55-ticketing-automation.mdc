@@ -1,0 +1,23 @@
+---
+description: Smart ticketing and automation (routing, SLA, auto-reply, escalation)
+globs: backend/services/ticketing/**, backend/services/automation/**, backend/jobs/**
+---
+
+Ticketing features (see PRD):
+- Automatic ticket creation from conversations (email, chat, etc.) with auto categorization and priority detection.
+- Smart ticket routing (by skill, load, or AI-suggested assignment).
+- SLA prediction and SLA breach alerts; duplicate ticket detection; ticket summarization.
+- Automation: auto reply generation, auto ticket closing when resolved, auto escalation, workflow automation.
+
+Rules:
+- Tickets must be first-class entities in the data model (docs/DB_SCHEMA.md); link conversations and messages to tickets.
+- Categorization and priority may use NLP (intent, sentiment, urgency) or rules; keep logic in services, not in routes.
+- Routing and escalation logic must be configurable (e.g. rules or ML); avoid hardcoded agent IDs.
+- SLA calculations and breach detection should run in a scheduled job or event-driven worker; notify via configured channels (email, Slack, in-app).
+- Auto-close and auto-reply must respect business rules (e.g. customer confirmation, no close on open complaints); log actions for audit.
+- Duplicate detection: use conversation content, customer identity, or ticket similarity (embeddings or keywords); link duplicates to canonical ticket.
+
+Do not:
+- Put ticket creation or routing logic in HTTP handlers only; support async ingestion (webhooks, queue) for scale.
+- Assume single-tenant; scope tickets and SLA by tenant/organization where applicable.
+- Trigger automation without idempotency and audit trail where state changes are critical.

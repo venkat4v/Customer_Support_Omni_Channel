@@ -1,0 +1,25 @@
+---
+description: Voice AI and video support (OpenAI STT/TTS, video calls, transcription)
+globs: backend/services/voice/**, backend/services/video/**, ai/voice/**, frontend/features/voice/**, frontend/features/video/**
+---
+
+Voice stack:
+- OpenAI API for speech-to-text (STT) and text-to-speech (TTS) for voice bot and real-time assistance.
+- Call recording and storage (e.g. S3) with metadata in Supabase.
+- Voice tone analysis and real-time call assistance as per PRD; use OpenAI or dedicated models via API.
+
+Video stack:
+- Real-time video support between customers and agents (WebRTC or managed service); screen sharing, file sharing, in-call chat.
+- AI transcript generation from video/audio and call summary generation (e.g. post-call) using OpenAI or batch jobs.
+
+Rules:
+- Keep voice pipeline separate from text chat pipeline; share conversation/ticket context where needed.
+- Transcriptions and summaries must be stored and linked to the conversation/call record for history and analytics.
+- Do not stream raw audio to prompts; use STT first, then text-based RAG/agents; TTS for responses when voice output is required.
+- Prefer async or worker-based processing for recording uploads and summary generation to avoid blocking request paths.
+- Secure storage and access control for recordings and PII; comply with retention and consent (GDPR, etc.).
+
+Do not:
+- Hardcode OpenAI API keys; use config/env.
+- Store unencrypted voice/video recordings in publicly accessible locations.
+- Mix voice-specific business logic with generic chat in the same untyped flow; use clear boundaries.

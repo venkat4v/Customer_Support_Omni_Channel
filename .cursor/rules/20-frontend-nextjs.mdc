@@ -1,0 +1,56 @@
+---
+description: Next.js frontend rules (web — Admin + User interface; native mobile is separate)
+globs: frontend/**, src/**, app/**, components/**, pages/**, lib/**, hooks/**
+---
+
+This rule applies to the **web** frontend only. The project also has a **native mobile app** (separate codebase); see .cursor/rules/12-interfaces-admin-user-mobile.mdc.
+
+Frontend stack:
+- Next.js
+- TypeScript
+- Component-driven UI
+- API integration with FastAPI backend (REST + WebSocket for chat and real-time)
+
+Frontend rules:
+- Prefer TypeScript for all frontend logic.
+- Keep components small, reusable, and focused.
+- Keep presentation separate from business/data-fetching logic.
+- Use hooks, services, or server actions appropriately based on project style.
+- Handle loading, error, and empty states explicitly.
+- Preserve design consistency and naming consistency.
+- Support real-time updates (WebSocket or SSE) for live chat, call status, and agent copilot suggestions.
+- **Two UIs in one app:** **Admin** (e.g. `/admin/*`) and **User interface** (e.g. `/`, `/chat`, `/tickets`); use role-based routing and layout; shared design system and API client.
+
+Product-area alignment (see docs/PRD.md):
+- **Admin (web only):** AI model config, knowledge base management, agent management, system monitoring, API keys.
+- **User interface (web):** Chat UI, agent dashboard, analytics dashboard; optional voice/video and channel switcher.
+- **Native mobile app:** Separate codebase; not covered by this rule.
+
+Preferred frontend structure:
+- frontend/app/            (routes for Admin and User UI)
+- frontend/app/admin/     (admin-only routes/layouts)
+- frontend/components/
+- frontend/features/       (chat, tickets, admin, analytics)
+- frontend/hooks/
+- frontend/lib/
+- frontend/services/       (API client, WebSocket, auth)
+- frontend/types/
+- frontend/tests/
+
+UI/UX rules:
+- Use accessible markup and semantic HTML.
+- Prefer reusable design system components.
+- Avoid oversized page components.
+- Avoid embedding complex API logic directly inside visual components unless already established by the repo.
+
+State/data rules:
+- Keep API clients centralized.
+- Normalize repeated API access patterns.
+- Handle auth state carefully.
+- Validate critical inputs on both client and server.
+
+Do not:
+- Mix many responsibilities into one component.
+- Hardcode API URLs in components.
+- Duplicate UI patterns that should be shared.
+- Put admin-only flows in the mobile app codebase (admin is web only).

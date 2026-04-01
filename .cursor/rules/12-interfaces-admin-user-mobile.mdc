@@ -1,0 +1,41 @@
+---
+description: Three interfaces — Admin (web), User interface (web), Native mobile app
+alwaysApply: true
+---
+
+This project has exactly three user-facing interfaces. All features, APIs, and docs must account for them.
+
+## 1. Admin (Web)
+
+- **Purpose:** Internal users (admins, operators) configure and monitor the system.
+- **Stack:** Next.js + TypeScript (same web app as User UI, with role-based routes and layout).
+- **Scope:** AI model config, knowledge base management, agent management, system monitoring, API key management, analytics dashboards, tenant/org settings.
+- **Access:** RBAC; admin (or equivalent) role only; not exposed to end customers.
+- **Where:** Served from the same Next.js app under routes/layouts reserved for admin (e.g. `/admin/*`).
+
+## 2. User Interface (Web)
+
+- **Purpose:** End customers (and optionally agents) use support on the web.
+- **Stack:** Next.js + TypeScript.
+- **Scope:** Live chat widget or full-page chat, conversation history, ticket view, help center, optional voice/video call UI, login/account for authenticated users.
+- **Access:** Public (e.g. chat widget) or authenticated (signed-in users); same backend APIs as mobile.
+- **Where:** Served from the same Next.js app (e.g. `/`, `/chat`, `/tickets`, `/help`).
+
+## 3. Native Mobile App
+
+- **Purpose:** End customers (and optionally agents) use support on iOS and Android.
+- **Stack:** Native mobile (e.g. React Native, Swift/Kotlin, or Flutter — native as per project choice); consumes the same FastAPI backend via REST and WebSocket.
+- **Scope:** Feature parity with User UI where applicable: chat, tickets, conversation history, push notifications, optional voice/video, deep links. No admin configuration in the mobile app; admin is web-only.
+- **Access:** Same auth as web (e.g. JWT, Supabase Auth); support device/push tokens for notifications.
+- **Where:** Separate codebase (e.g. `mobile/` or dedicated repos); distribution via App Store and Google Play.
+
+## Rules
+
+- **Backend:** One API surface serves all three; use RBAC and scopes to distinguish admin vs user vs mobile. Do not create separate APIs per interface unless justified (e.g. mobile-specific push or deep-link endpoints).
+- **Web (Next.js):** Single app that hosts both Admin and User UI; separate routes/layouts and role checks; shared design system and API client.
+- **Mobile:** Native app(s) consume docs/API_SPEC.md; use SDK or direct REST/WebSocket; document mobile-specific needs (e.g. push, offline, app version header) in API_SPEC and DEPLOYMENT.
+- **Docs and rules:** PRD, ARCHITECTURE, API_SPEC, DB_SCHEMA, and DEPLOYMENT must explicitly reference Admin, User UI, and Native mobile app where relevant.
+
+Do not:
+- Build admin-only flows in the mobile app.
+- Assume only one “frontend”; there are two delivery surfaces (web app and native app) and three logical interfaces (admin, user web, user mobile).

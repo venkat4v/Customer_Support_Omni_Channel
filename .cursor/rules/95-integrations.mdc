@@ -1,0 +1,28 @@
+---
+description: External integrations (CRM, Zendesk, Jira, Slack, webhooks, SDK)
+globs: backend/integrations/**, backend/api/routes/webhooks/**, sdk/**
+---
+
+Integration scope (see PRD):
+- CRM: Salesforce, HubSpot (customer/account sync, ticket creation, activity log).
+- Support tools: Zendesk (ticket sync, side-by-side or migration).
+- Collaboration: Slack, Microsoft Teams (notifications, agent workflows, optional channel for customers).
+- Dev/workflow: Jira (ticket linking, issue creation).
+- Payment and ERP integration as required by product.
+
+Developer APIs and webhooks:
+- Support API, Chat API, Voice API (per API_SPEC.md); secure with API keys or OAuth.
+- Webhook support: outbound events (ticket created, conversation closed, etc.) with retries and signature verification.
+- SDK support (e.g. JS/Python) for chat, tickets, and common flows; keep API contract stable and versioned.
+
+Rules:
+- Each integration must be behind an adapter interface; keep credentials and provider-specific logic in one place.
+- Use environment or secret manager for API keys and webhook secrets; never hardcode.
+- Idempotency and idempotency keys for webhook consumers where applicable; handle rate limits and backoff.
+- Audit log for integration actions (sync, push, pull) for compliance and debugging.
+- Prefer webhooks over polling for real-time updates; document payload schemas in API_SPEC or separate integration docs.
+
+Do not:
+- Tightly couple core ticketing or conversation logic to a single CRM or tool; support multiple integrations via configuration.
+- Expose internal IDs or sensitive data in webhook payloads without necessity; support filtering and scoping.
+- Change webhook or public API contract without versioning and notice.

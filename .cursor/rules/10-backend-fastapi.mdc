@@ -1,0 +1,61 @@
+---
+description: FastAPI backend rules
+globs: backend/**, api/**, server/**, app/**.py
+---
+
+Backend stack:
+- Python 3.x
+- FastAPI
+- Pydantic
+- Supabase (PostgreSQL) for persistence
+- Redis for cache, rate limiting, session state, and queues
+- OpenAI API for text generation, embeddings, speech-to-text, text-to-speech
+- Twilio for WhatsApp and SMS
+- Configurable email provider (e.g. SendGrid, AWS SES) for ticket ingestion and notifications
+- WebSockets for real-time chat and streaming
+- Event streaming (e.g. Kafka or AWS SQS/SNS) for async workflows where required
+
+Backend rules:
+- Use clean architecture.
+- Routes/controllers should only handle HTTP/WebSocket concerns.
+- Business logic must live in services (ticketing, RAG, agents, channels, NLP).
+- Database access must live in repositories.
+- Validation must be done using Pydantic schemas/models.
+- Use dependency injection patterns where appropriate.
+- Use async I/O for external calls (OpenAI, Twilio, email, Supabase).
+- Use pagination for list endpoints.
+- Use consistent response models.
+- Use centralized exception handling.
+
+API conventions:
+- Follow RESTful naming; version APIs (e.g. /api/v1/).
+- Use proper status codes; return predictable response structure.
+- Do not leak internal stack traces or raw database errors.
+- Support WebSocket endpoints for chat and real-time features per API_SPEC.md.
+
+Preferred backend structure:
+- backend/api/routes/          (HTTP + WebSocket routes)
+- backend/api/dependencies/
+- backend/services/            (business logic: ticketing, rag, agents, channels, nlp)
+- backend/repositories/
+- backend/models/
+- backend/schemas/
+- backend/core/                (config, security, logging)
+- backend/integrations/       (Twilio, email, Slack/Teams, CRM adapters)
+- backend/utils/
+- backend/tests/
+
+Coding expectations:
+- Add type hints to functions.
+- Add docstrings for non-trivial service methods.
+- Keep routes thin and declarative.
+- Keep service methods focused and testable.
+- Reuse existing utilities before creating new ones.
+- Isolate channel adapters (Twilio, email, etc.) behind a unified conversation/channel interface.
+
+Do not:
+- Put SQL or ORM-heavy logic inside route files.
+- Put business logic inside Pydantic schemas.
+- Put environment variables directly across many files; centralize config.
+- Mix unrelated domains in the same service file.
+- Hardcode Twilio credentials, OpenAI keys, or email provider secrets; use config/env.

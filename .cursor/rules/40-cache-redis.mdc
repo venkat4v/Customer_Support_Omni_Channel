@@ -1,0 +1,31 @@
+---
+description: Redis caching, queue, and event coordination rules
+globs: backend/**, ai/**, workers/**, jobs/**, queue/**, cache/**
+---
+
+Redis usage:
+- Use Redis for caching, rate limiting, session-like ephemeral state, queues, and short-lived coordination.
+- Choose TTLs intentionally.
+- Cache only what has a clear performance benefit (e.g. KB metadata, embeddings cache, agent context).
+- Make cache invalidation explicit.
+
+Rules:
+- Wrap Redis access in dedicated utilities/services.
+- Use stable key naming conventions (e.g. by tenant, channel, conversation).
+- Document key patterns if introducing new families of keys.
+- Prefer idempotent worker/job behavior for ticketing, notifications, and async AI tasks.
+- Use retries carefully and avoid infinite retry loops.
+
+Caching expectations:
+- Cache expensive reads and repeated metadata lookups where appropriate.
+- Do not cache highly sensitive data unless encrypted and justified.
+- Do not rely on cache as the only source of truth for critical persistent state (tickets, conversations).
+
+Event streaming (when used):
+- Use event streaming (e.g. Kafka or AWS SQS/SNS) for high-throughput, async processing (ingestion, notifications, analytics) per ARCHITECTURE.md.
+- Keep Redis for low-latency coordination and queues; use event streaming for durable, scalable pipelines.
+
+Do not:
+- Scatter raw Redis calls across the codebase.
+- Store large unbounded payloads without TTL or cleanup strategy.
+- Mix queue semantics and cache semantics without clarity.

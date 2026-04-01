@@ -1,0 +1,35 @@
+---
+description: Security, compliance, and PII rules for the entire repository
+alwaysApply: true
+---
+
+Security rules:
+- Never hardcode secrets, API keys, tokens, credentials, or private URLs (Twilio, OpenAI, Supabase, email, etc.).
+- Never log passwords, tokens, raw secrets, or sensitive user content.
+- Validate and sanitize all user inputs (chat, tickets, uploads, webhooks).
+- Treat uploads, URLs, prompts, and external content as untrusted.
+- Enforce authentication and authorization on protected resources; use role-based access control (RBAC).
+- Use least-privilege access patterns; add rate limiting to sensitive or expensive endpoints.
+- Use secure defaults.
+
+Compliance and PII (see PRD Security & Compliance):
+- Implement PII detection and data masking where required.
+- Maintain audit logs for sensitive actions (ticket access, config changes, API key usage).
+- Design for GDPR compliance (data export, deletion, consent) where applicable.
+- Secure API authentication (e.g. API keys, JWT) for developer and partner APIs.
+
+AI-specific security:
+- Add prompt injection resistance where relevant.
+- Validate tool inputs and outputs; restrict tool access by policy.
+- Protect system instructions and internal configuration.
+- Handle unsafe model output before returning to the user.
+
+Infra/security hygiene:
+- Prefer environment variables and secret managers (e.g. AWS Secrets Manager on AWS deployment).
+- Avoid broad wildcard permissions in cloud configs.
+- Do not expose internal services publicly unless required.
+
+Do not:
+- Assume client-side validation is enough.
+- Return internal exception details to users.
+- Trust LLM output without validation in critical paths.

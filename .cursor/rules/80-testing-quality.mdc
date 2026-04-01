@@ -1,0 +1,28 @@
+---
+description: Testing and code quality rules
+alwaysApply: true
+---
+
+Testing philosophy:
+- Write production-quality code with tests for critical behavior.
+- Prefer deterministic unit tests for business logic (ticketing, RAG, routing, NLP).
+- Add integration tests for APIs, repositories, pipelines, and workflows crossing boundaries.
+- Mock external services: Twilio, email provider, OpenAI, Supabase (or use test containers), CRM/webhooks.
+
+Testing expectations:
+- Add tests for non-trivial service methods.
+- Add tests for auth and permission-sensitive flows (RBAC, API keys).
+- Add tests for RAG/agent logic at the orchestration level where feasible.
+- Cover validation, failure, and edge cases (no context, low confidence, escalation).
+- Test channel adapters (WhatsApp/SMS, email) with mocked providers.
+- Mock speech-to-text/text-to-speech and voice/video paths in tests; keep tests isolated.
+- Keep tests readable and isolated; do not depend on live external APIs in normal test flows.
+
+Code quality:
+- Use linting and formatting; use types wherever the stack supports them.
+- Keep functions focused; refactor repeated logic into shared utilities when justified.
+
+Do not:
+- Add major logic without at least basic tests.
+- Create brittle tests tied to unstable implementation details.
+- Depend on live Twilio, OpenAI, or email in normal test runs.
